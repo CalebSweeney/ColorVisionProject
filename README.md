@@ -1,15 +1,15 @@
-# Replace with your unique project name
+# ColorConverter
 
 ## Description
 
 **version 1.0**
 
-Replace with a description of *what* your program does (not *how* it works)
+A project that converts inputed RGB values into approximations of what those with various types of color blindness would see
 
 
 ## Developer
 
-Replace with your name
+Caleb Sweeney
 
 ## Example
 
@@ -23,5 +23,10 @@ g++ --std=c++11 *.cpp -o cvp
 Here is an example of the program running:
 
 ```
-Replace this with a copy-pasted example of the input/output of your program running.
+Please enter R for Protanopia, G for Deutranopia, and B for Tritanopia:
+R
+Please enter three numbers, for R, G, and B. (from 0-255, inclusive):
+150 20 70
+Protanopia R G B: 93 92 57
+ 
 ```
