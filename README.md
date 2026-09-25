@@ -23,10 +23,13 @@ g++ --std=c++11 *.cpp -o cvp
 Here is an example of the program running:
 
 ```
-Please enter R for Protanopia, G for Deutranopia, and B for Tritanopia:
+Please enter R for Protanopia, G for Deutranopia, and B for Tritanopia (Enter any other letter to exit the program):
 R
 Please enter three numbers, for R, G, and B. (from 0-255, inclusive):
-150 20 70
-Protanopia R G B: 93 92 57
+200 050 000
+Protanopia R G B: 135 133 12
+Please enter R for Protanopia, G for Deutranopia, and B for Tritanopia (Enter any other letter to exit the program):
+A
+You have exited the program :(
  
 ```
