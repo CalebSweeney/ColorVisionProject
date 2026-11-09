@@ -1,72 +1,97 @@
 #include <iostream>
-using namespace std;
 #include <algorithm>
+#include <fstream>
+using namespace std;
 
-void protanopia(int red, int green, int blue, int& outR, int& outG, int& outB){
-  outR = 0.567*red + 0.433*green;
-  outG = 0.558*red + 0.442*green;
-  outB = 0.242*green+ 0.758*blue;
+double TYPE_ARRAY[4][9];
 
-  outR = clamp(outR, 0, 255);
-  outG = clamp(outG, 0, 255);
-  outB = clamp(outB, 0, 255);
+bool readColorChart();
+void colorBlindness(int type, int red, int green, int blue, int& outR, int& outG, int& outB);
+void selectType(char selectedType, int r, int g, int b, int& newR, int& newG, int& newB);
+
+int main(){
+    char selectedType;
+    int r;
+    int g;
+    int b;
+    int newR;
+    int newG;
+    int newB;
+    bool stillRunning = true;
+
+    if(!readColorChart()){
+        return 1;
+    }
+
+    do{
+        cout << "Please enter P for Protanopia, D for Deutranopia, T for Tritanopia, and A for Achromatopsia (Enter any other letter to exit the program):" << endl;
+        cin >> selectedType;
+
+        if(selectedType != 'P' && selectedType != 'D' &&  selectedType != 'T' && selectedType != 'A'){
+            cout << "You have exited the program :(" << endl;
+            stillRunning = false;
+        }
+
+        if(stillRunning){
+            cout << "Please enter three numbers, for R, G, and B. (from 0-255, inclusive):" << endl;
+            cin >> r >> g >> b;
+
+            selectType(selectedType, r, g, b, newR, newG, newB);
+        }
+
+    }while(stillRunning);
+
+    return 0;
 }
 
-void deutranopia(int red, int green, int blue, int& outR, int& outG, int& outB){
-  outR = 0.625*red + 0.375*green;
-  outG = 0.700*red + 0.300*green;
-  outB = 0.300*green + 0.700*blue;
+bool readColorChart(){
+    ifstream file("colorChart.txt");
 
-  outR = clamp(outR, 0, 255);
-  outG = clamp(outG, 0, 255);
-  outB = clamp(outB, 0, 255);
+    if(!file){
+        cout << "Error opening colorChart.txt" << endl;
+        return false;
+    }
+
+    for(int row = 0; row < 4; row++){
+        for(int col = 0; col < 9; col++){
+            if(!(file >> TYPE_ARRAY[row][col])){
+                cout << "Error reading colorChart.txt" << endl;
+                return false;
+            }
+        }
+    }
+
+    file.close();
+    return true;
 }
 
-void tritanopia(int red, int green, int blue, int& outR, int& outG, int& outB){
-  outR = 0.950*red + 0.050*green;
-  outG = 0.433*green + 0.567*blue;
-  outB = 0.475*green + 0.525*blue;
+void colorBlindness(int type, int red, int green, int blue, int& outR, int& outG, int& outB){
+    outR = TYPE_ARRAY[type][0] * red + TYPE_ARRAY[type][1] * green + TYPE_ARRAY[type][2] * blue;
+    outG = TYPE_ARRAY[type][3] * red + TYPE_ARRAY[type][4] * green + TYPE_ARRAY[type][5] * blue;
+    outB = TYPE_ARRAY[type][6] * red + TYPE_ARRAY[type][7] * green + TYPE_ARRAY[type][8] * blue;
 
-  outR = clamp(outR, 0, 255);
-  outG = clamp(outG, 0, 255);
-  outB = clamp(outB, 0, 255);
+    outR = clamp(outR, 0, 255);
+    outG = clamp(outG, 0, 255);
+    outB = clamp(outB, 0, 255);
 }
 
-int main()
-{
-  char selectedType;
-  int r;
-  int g;
-  int b;
-  int newR = 0;
-  int newG = 0;
-  int newB = 0;
-  bool thing = true;
+void selectType(char selectedType, int r, int g, int b, int& newR, int& newG, int& newB){
+    if(selectedType == 'P'){
+        colorBlindness(0, r, g, b, newR, newG, newB);
+        cout << "Protanopia R G B: ";
+    }
+    else if(selectedType == 'D'){
+        colorBlindness(1, r, g, b, newR, newG, newB);
+        cout << "Deutranopia R G B: ";
+    }
+    else if(selectedType == 'T'){
+        colorBlindness(2, r, g, b, newR, newG, newB);
+        cout << "Tritanopia R G B: ";
+    }
+    else if(selectedType == 'A'){
+        colorBlindness(3, r, g, b, newR, newG, newB);
+        cout << "Achromatopsia R G B: ";
+    }
 
-  do{
-    cout << "Please enter R for Protanopia, G for Deutranopia, and B for Tritanopia (Enter any other letter to exit the program):" << endl;
-    cin >> selectedType;
-    if(selectedType != 'R' && selectedType != 'G' && selectedType != 'B'){
-      cout << "You have exited the program :(" << endl;
-      thing = false;
-    }
-    if(thing){
-      cout << "Please enter three numbers, for R, G, and B. (from 0-255, inclusive):" << endl;
-      cin >> r >> g >> b;
-    }
-  
-  
-    if(selectedType == 'R'){
-      protanopia(r, g, b, newR, newG, newB);
-      cout << "Protanopia R G B: " << newR << " " << newG << " " << newB << endl;
-    }else if(selectedType == 'G'){
-      deutranopia(r, g, b, newR, newG, newB);
-      cout << "Deutranopia R G B: " << newR << " " << newG << " " << newB << endl;
-    }else if(selectedType == 'B'){
-      tritanopia(r, g, b, newR, newG, newB);
-      cout << "Tritanopia R G B: " << newR << " " << newG << " " << newB << endl;
-    }
-  }while(thing);
-
-  return 0;
+    cout << newR << " " << newG << " " << newB << endl;
 }
